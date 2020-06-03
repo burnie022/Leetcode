@@ -21,20 +21,10 @@ Note:
 
 def twoCitySchedCost(costs) -> int:
     mid = len(costs)//2
-    print("mid:", mid)
-    a = sorted(costs)
-    b = sorted([(j, i) for i,j in costs])
-    print(a)
-    print(b)
-    sum1 = sum(i[0] for i in a[:len(a)//2]) + sum(j[1] for j in a[len(a)//2 + 1:])
-    print(sum1)
-
-    diff1 = sorted([(d[0] - d[1], i) for i, d in enumerate(costs)])
-    s_diff1 = sum(e[1] for e in diff1)
-    print(sorted(diff1))
-    print(sum())
+    diff = sorted([(d[0] - d[1], i) for i, d in enumerate(costs)])
+    return sum(costs[i][0] for d, i in diff[:mid]) + sum(costs[i][1] for d, i in diff[mid:])
 
 
 # For testing
 iin = [[10,20],[30,200],[400,50],[30,20]]
-twoCitySchedCost(iin)
+print(twoCitySchedCost(iin))
