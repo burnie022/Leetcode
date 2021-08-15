@@ -42,44 +42,55 @@ L ------------------------ R , Suppose this is the window that contains all char
 
 When the window is no longer valid, start expanding again using the right pointer.
 """
-from typing import List
 
 
 class Solution:
     def minWindow(self, s: str, t: str) -> str:
         if len(t) > len(s):
             return ""
-        asc = [0 for _ in range(58)]
+        asc, count = [0 for _ in range(58)], {}
         window, start = len(s) + 1, 0
         for c in t:
             asc[ord(c) - 65] -= 1
+            count[c] = count.get(c, 0) + 1
 
         for i in range(len(asc)):
             if asc[i] == 0:
                 asc[i] += 100000
 
-        left, right = 0, 0
+        right = 0
+        while right < len(s) and count:
+            asc[ord(s[right]) - 65] += 1
+
+            if count.get(s[right]):
+                count[s[right]] -= 1
+                if count[s[right]] == 0:
+                    count.pop(s[right])
+            right += 1
+        if count:
+            return ""
+
+        left = 0
         while right < len(s):
             while asc[ord(s[left]) - 65] > 0:
                 asc[ord(s[left]) - 65] -= 1
                 left += 1
-                if right - left < window:
-                    window = right - left
-                    start += -start + left
+
+            if right - left < window:
+                window = right - left
+                start = left
 
             asc[ord(s[right]) - 65] += 1
-            right = max(right+1, left+1)
+            right += 1
 
-        while left < len(s) and asc[ord(s[left]) - 65] > 0:
+        while asc[ord(s[left]) - 65] > 0:
             asc[ord(s[left]) - 65] -= 1
             left += 1
+            if right - left < window:
+                window = right - left
+                start = left
 
-        if all(i >= 0 for i in asc):
-            window = min(window, right-left)
-
-        return s[left: left + window + 1] if window <= len(s) else ""
-
-
+        return s[start: start + window]
 
 
 
@@ -90,21 +101,23 @@ if __name__ == "__main__":
         ("a", "a"),
         ("a", "aa"),
         ("aabc", "caba"),
-        ("jHZLKJBmxCvhFIDlewypqVjEOPPnddkAeQgciGSNjtOzGnzwflCTNQAmZeHSBEUElaCnyPoRjAEBsUgagTwSugBQzsxuPhaHBiMT", "IBnc")
+        ("jHZLKJBmxCvhFIDlewypqVjEOPPnddkAeQgciGSNjtOzGnzwflCTNQAmZeHSBEUElaCnyPoRjAEBsUgagTwSugBQzsxuPhaHBiMT", "IBnc"),
+        ("jHZLKJBmxCvhFIDlewypqVjEOPPnddkAeQgciGSNjtOzGnzwflCTNQAmZeHSBEUElaCnyPoRjAEBsUgagTwSugBQzsxuPhaHBiMT", "IBArnc"),
+        ("jHZLKJBmxCvhFIDlewypqVjEOPPnddkAeQgciGSNjtOzGnzwflCTNQAmZeHSBEUElaCnyPoRjAEBsUgagTwSugBQzsxuPhaHBiMT", "IBARnc"),
 
     ]
     #
-    # for t in tests:
-    #     print(f"\"{t[0]}\"")
-    #     print(f"\"{t[1]}\"")
-    #     # print(obj.minWindow(*t), end="\n\n")
+    for t in tests:
+        print(f"\"{t[0]}\"")
+        print(f"\"{t[1]}\"")
+        # print(obj.minWindow(*t), end="\n\n")
 
 
-    from random import randint
-    def test_gen(length):
-        s = []
-        for _ in range(length):
-            cap = randint(0,1)
-            s.append(chr(randint(65, 90)) if cap == 1 else chr(randint(97,122)))
-        return "".join(s)
-    print(test_gen(100))
+    # from random import randint
+    # def test_gen(length):
+    #     s = []
+    #     for _ in range(length):
+    #         cap = randint(0,1)
+    #         s.append(chr(randint(65, 90)) if cap == 1 else chr(randint(97,122)))
+    #     return "".join(s)
+    # print(test_gen(100))
